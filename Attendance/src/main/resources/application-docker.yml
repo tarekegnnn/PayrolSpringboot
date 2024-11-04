@@ -1,0 +1,23 @@
+server:
+ port: 4343
+
+
+spring:
+ application:
+  name: Attendance
+
+ datasource:
+  url: jdbc:mysql://mysql:3306/attendance_db?createDatabaseIfNotExist=true
+  username: root
+  password: password
+
+ jpa:
+  hibernate:
+   ddl-auto: update
+  show-sql: true
+eureka:
+ client:
+  serviceUrl:
+   defaultZone: http://eureka-server:8761/eureka
+  fetch-registry: true
+  register-with-eureka: true

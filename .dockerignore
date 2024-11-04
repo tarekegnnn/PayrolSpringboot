@@ -1,0 +1,9 @@
+
+# Ignore any local environment files
+.env
+# Ignore Git-related files
+.git
+.gitignore
+# Ignore other temporary or unnecessary files
+node_modules
+*.log

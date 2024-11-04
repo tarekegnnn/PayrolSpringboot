@@ -1,0 +1,44 @@
+server:
+  port: 9191
+
+spring:
+  main:
+    web-application-type: reactive
+    allow-bean-definition-overriding: true
+
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8080/realms/Hr-system
+          jwk-set-uri: http://keycloak:8080/realms/Hr-system/protocol/openid-connect/certs
+
+  cloud:
+    gateway:
+      routes:
+        - id: attendance_service
+          uri: lb://ATTENDANCE
+          predicates:
+            - Path=/api/v1/attendance/**
+        - id: employee_service
+          uri: lb://EMPLOYMENT
+          predicates:
+            - Path=/api/v1/employee/**
+        - id: organization_service
+          uri: lb://ORGANIZATION
+          predicates:
+            - Path=/api/v1/org/**
+        - id: payroll_service
+          uri: lb://PAYROLL
+          predicates:
+            - Path=/api/v1/payroll/**
+  application:
+    name: ApiGateWay
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://eureka-server:8761/eureka
+    fetch-registry: true
+    register-with-eureka: true
+

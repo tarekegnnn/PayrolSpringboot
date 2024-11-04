@@ -1,0 +1,166 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:latest
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: auth_db
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./init-multiple-databases.sql:/docker-entrypoint-initdb.d/init-multiple-databases.sql
+      - mysql-data:/var/lib/mysql
+    restart: unless-stopped
+    networks:
+      - mysql
+
+  # Keycloak
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0.4
+    container_name: keycloak
+    ports:
+      - "8080:8080"
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: mysql
+      KC_DB_URL: jdbc:mysql://mysql:3306/auth_db
+      KC_DB_USERNAME: root
+      KC_DB_PASSWORD: password
+    depends_on:
+      - mysql
+    networks:
+      - mysql
+      - spring
+    restart: unless-stopped
+    command:
+      - start-dev
+
+  # Discovery Server
+  eureka-server:
+    build:
+      context: EurikaService  # Adjust the context to the directory of your Eureka server Dockerfile
+      dockerfile: Dockerfile
+    image: eureka-server:latest
+    container_name: eureka-server
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8761:8761"
+    restart: unless-stopped
+    networks:
+      - spring
+  # API Gateway
+  api-gateway:
+    build:
+      context: apigateway
+      dockerfile: Dockerfile
+    image: api-gateway:latest
+    container_name: api-gateway
+    ports:
+      - "9191:9191"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    restart: unless-stopped
+    networks:
+      - spring
+
+  # Payroll Service
+  payroll-service:
+    build:
+      context: PayrollService
+      dockerfile: Dockerfile
+    image: payroll-service:latest
+    container_name: payroll-service
+    ports:
+      - "5252:5252"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/payrolldb
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: password
+    depends_on:
+      - mysql
+      - keycloak
+    restart: unless-stopped
+    networks:
+      - mysql
+      - spring
+  #employe Service
+  employee-service:
+    build:
+      context: employe_microservice
+      dockerfile: Dockerfile
+    image: employe-service:latest
+    container_name: employee-service
+    ports:
+      - "7777:7777"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/employee_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: password
+    depends_on:
+      - mysql
+      - keycloak
+    restart: unless-stopped
+    networks:
+      - mysql
+      - spring
+  #organization Service
+  organization-service:
+    build:
+      context: organization_microservice
+      dockerfile: Dockerfile
+    image: organization-service:latest
+    container_name: organization-service
+    ports:
+      - "9999:9999"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/organization_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: password
+    depends_on:
+      - mysql
+      - keycloak
+    restart: unless-stopped
+    networks:
+      - mysql
+      - spring
+  #attendance Service
+  attendance-service:
+    build:
+      context: Attendance
+      dockerfile: Dockerfile
+    image: attendance-service:latest
+    container_name: attendance-service
+    ports:
+      - "4343:4343"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/attendance_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: password
+    depends_on:
+      - mysql
+      - keycloak
+    restart: unless-stopped
+    networks:
+      - mysql
+      - spring
+
+
+
+networks:
+  mysql:
+    driver: bridge
+  spring:
+    driver: bridge
+
+volumes:
+  mysql-data:
+    driver: local

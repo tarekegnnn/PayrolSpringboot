@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: EurikaService
+server:
+  port: 8761
+eureka:
+  client:
+    instance:
+      prefer-ip-address: true
+    registerWithEureka: true
+    fetchRegistry: true
+  service-url:
+    defaultZone: http://eureka-server/eureka
