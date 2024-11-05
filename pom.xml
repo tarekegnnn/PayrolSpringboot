@@ -9,13 +9,13 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.Hr-payroll</groupId>
-	<artifactId>Payroll</artifactId>
+	<artifactId>PayrolSpringboot</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Payroll</name>
 	<description>Demo project for Spring Boot</description>
     <modules>
-        <module>employe_microservice</module>
+        <module>employment_microservice</module>
         <module>organization_microservice</module>
 		<module>PayrollService</module>
 		<module>EurikaService</module>

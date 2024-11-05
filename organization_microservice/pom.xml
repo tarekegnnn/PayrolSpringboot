@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.ORsystem</groupId>
-	<artifactId>orsystem</artifactId>
+	<artifactId>organization_microservice</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>orsystem</name>
 	<description>Demo project for Spring Boot</description>
